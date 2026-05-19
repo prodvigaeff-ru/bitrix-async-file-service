@@ -12,10 +12,12 @@ class fileprocessor extends CModule
 
     public function __construct()
     {
-        $this->MODULE_VERSION      = '1.0.0';
-        $this->MODULE_VERSION_DATE = '2026-05-19';
-        $this->MODULE_NAME         = 'File Processor';
-        $this->MODULE_DESCRIPTION  = 'Async file upload and processing service using RabbitMQ';
+        $arModuleVersion = [];
+        include __DIR__ . '/version.php';
+        $this->MODULE_VERSION      = $arModuleVersion['VERSION'];
+        $this->MODULE_VERSION_DATE = $arModuleVersion['VERSION_DATE'];
+        $this->MODULE_NAME         = GetMessage('FP_MODULE_NAME');
+        $this->MODULE_DESCRIPTION  = GetMessage('FP_MODULE_DESCRIPTION');
     }
 
     public function DoInstall(): bool
