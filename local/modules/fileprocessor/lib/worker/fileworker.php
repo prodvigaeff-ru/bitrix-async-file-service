@@ -10,30 +10,30 @@ class FileWorker
 {
     public function process(int $fileQueueId): void
     {
-        FileQueueTable::update($fileQueueId, [
+        $this->updateStatus($fileQueueId, [
             'STATUS'     => 'processing',
             'UPDATED_AT' => new DateTime(),
         ]);
 
         try {
-            $row = FileQueueTable::getById($fileQueueId)->fetch();
+            $row = $this->fetchRecord($fileQueueId);
             if (!$row) {
                 throw new \RuntimeException("File queue record #{$fileQueueId} not found");
             }
 
-            $fileArray = \CFile::GetFileArray($row['FILE_ID']);
+            $fileArray = $this->fetchBitrixFile($row['FILE_ID']);
             if (!$fileArray) {
                 throw new \RuntimeException("Bitrix file #{$row['FILE_ID']} not found");
             }
 
-            $this->processFile($fileArray);
+            $this->doProcess($fileArray);
 
-            FileQueueTable::update($fileQueueId, [
+            $this->updateStatus($fileQueueId, [
                 'STATUS'     => 'done',
                 'UPDATED_AT' => new DateTime(),
             ]);
         } catch (\Throwable $e) {
-            FileQueueTable::update($fileQueueId, [
+            $this->updateStatus($fileQueueId, [
                 'STATUS'        => 'error',
                 'ERROR_MESSAGE' => mb_substr($e->getMessage(), 0, 1000),
                 'UPDATED_AT'    => new DateTime(),
@@ -41,7 +41,24 @@ class FileWorker
         }
     }
 
-    private function processFile(array $fileArray): void
+    protected function updateStatus(int $id, array $fields): void
+    {
+        FileQueueTable::update($id, $fields);
+    }
+
+    protected function fetchRecord(int $id): ?array
+    {
+        $row = FileQueueTable::getById($id)->fetch();
+        return $row ?: null;
+    }
+
+    protected function fetchBitrixFile(int $fileId): ?array
+    {
+        $result = \CFile::GetFileArray($fileId);
+        return $result ?: null;
+    }
+
+    protected function doProcess(array $fileArray): void
     {
         $path = $_SERVER['DOCUMENT_ROOT'] . $fileArray['SRC'];
 

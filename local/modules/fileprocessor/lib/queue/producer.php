@@ -15,19 +15,21 @@ class Producer
     private AMQPStreamConnection $connection;
     private AMQPChannel $channel;
 
-    public function __construct()
+    public function __construct(?AMQPStreamConnection $connection = null)
     {
-        $cfg = Config::getRabbitMQ();
+        if ($connection === null) {
+            $cfg = Config::getRabbitMQ();
+            $connection = new AMQPStreamConnection(
+                $cfg['host'],
+                $cfg['port'],
+                $cfg['user'],
+                $cfg['pass'],
+                $cfg['vhost']
+            );
+        }
 
-        $this->connection = new AMQPStreamConnection(
-            $cfg['host'],
-            $cfg['port'],
-            $cfg['user'],
-            $cfg['pass'],
-            $cfg['vhost']
-        );
-
-        $this->channel = $this->connection->channel();
+        $this->connection = $connection;
+        $this->channel    = $this->connection->channel();
         $this->channel->queue_declare(self::QUEUE_NAME, false, true, false, false);
     }
 

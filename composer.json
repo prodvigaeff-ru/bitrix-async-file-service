@@ -12,6 +12,17 @@
             "FileProcessor\\": "local/modules/fileprocessor/lib/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "FileProcessor\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
     "config": {
         "vendor-dir": "local/vendor"
     }
