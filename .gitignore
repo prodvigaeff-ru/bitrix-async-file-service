@@ -1,0 +1,7 @@
+/local/vendor/
+.env
+*.log
+/bitrix/
+/upload/
+/cache/
+/managed_cache/
