@@ -43,7 +43,7 @@ namespace Bitrix\Main\ORM\Data {
     {
         public static function getTableName(): string { return ''; }
         public static function getMap(): array        { return []; }
-        public static function getById(mixed $id): object { return new class { public function fetch(): false { return false; } }; }
+        public static function getById(mixed $id): object { return new class { public function fetch(): array|false { return false; } }; }
         public static function add(array $data): object   { return new class { public function isSuccess(): bool { return true; } public function getId(): int { return 0; } public function getErrorMessages(): array { return []; } }; }
         public static function update(mixed $id, array $data): object { return new class { public function isSuccess(): bool { return true; } }; }
     }
